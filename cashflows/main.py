@@ -1,7 +1,7 @@
 import fire
 import json 
 
-from util import InvestmentProject
+from Util import InvestmentProject
 
 
 class Main(object):
@@ -13,9 +13,13 @@ class Main(object):
         print(json.dumps(description, indent=4))
 
     @staticmethod
-    def plot_investment(filepath, save="", show=False):
-        # TODO: implement plot_investment method
-        raise NotImplementedError
+    def plot_investment(filepath, save="", show=False, hurdle_rate=None):
+        investment_project = InvestmentProject.from_csv(filepath=filepath, hurdle_rate=hurdle_rate)
+        fig = investment_project.get_plot(show=show)
+        if save:
+            fig.savefig(save)
+        
 
 if __name__ == "__main__":
     fire.Fire(Main)
+    

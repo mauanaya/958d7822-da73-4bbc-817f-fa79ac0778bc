@@ -4,16 +4,13 @@ import matplotlib.pyplot as plt
 
 
 class Cashflow(object):
-    """Cashflow
-    Create a cashflow-class definition.
-    
-    Attributes: 
-        * amount - monetary amount at time t.
-        * t - integer representing time. 
-        
-    Methods:
-        * present_value(self, interest_rate) - returns the present value of the cashfow given a interest-rate.
-    """
+   def __init__(self, amount, t):
+        self.amount = amount
+        self.t = t
+
+   def present_value(self,interest_rate):
+        return (self.amount / (1 + self.interest_rate) ** self.t)
+
 
 
 class InvestmentProject(object):
@@ -36,34 +33,25 @@ class InvestmentProject(object):
     def internal_return_rate(self):
         return np.irr([flow.amount for flow in self.cashflows])
 
-    def plot(self, show=False):
-        """Plot Cashflows
-        The `plot` function creates a bar plot (fig) where x=t and y=amount.
-        :param show: boolean that represents whether to run `plt.show()` or not.
-        :return: matplotlib figure object.
-        """
-        # TODO: implement plot method
-        raise NotImplementedError
+    def get_plot(self, show=False, save=""):
+        
+            fig = plt.figure(1)
+            plot = plt.bar([flow.t for flow in self.cashflows], [flow.amount for flow in self.cashflows])
+            plt.xlabel("Time")
+            plt.ylabel("Amount")
+            plt.title("Cashflows")
+            if show:
+                plt.show()
+            return fig
 
 
     def net_present_value(self, interest_rate=None):
-        """ Net Present Value
-        Calculate the net-present value of a list of cashflows.
-        :param interest_rate: represents the discount rate.
-        :return: a number (currency) representing the net-present value.
-        """
-        # TODO: implement net_present_value method
-        raise NotImplementedError
+        self.interest_rate = interest_rate if interest_rate else self.hurdle_rate
+        return np.npv(self.interest_rate,[flow.amount for flow in self.cashflows])
 
     def equivalent_annuity(self, interest_rate=None):
-        """ Equivalent Annuity
-        Transform a set of cashflows into a constant payment.
-        :param interest_rate: represents the interest-rate used with the annuity calculations.
-        :return: a number (currency) representing the equivalent annuity.
-        """
-        # TODO: implement equivalent_annuity methdo
-        raise NotImplementedError
-
+        return (self.net_present_value(interest_rate=None)*self.interest_rate)/(1-(1+self.interest_rate)**(-self.cashflow_max_position))
+        
     def describe(self):
         return {
             "irr": self.internal_return_rate,
